@@ -1,0 +1,28 @@
+# SDK: lo clona strumenti/prepara-wsl.sh a un commit fisso
+/sdk/
+
+# Dati di salute dell'amico (export del database di Gadgetbridge): mai su git
+/data/
+Gadgetbridge
+Gadgetbridge.db
+*.sqlite
+*.sqlite3
+
+# Chiave di autenticazione dell'orologio e credenziali: tenerle in segreti/
+/segreti/
+*.key
+.env
+
+# Prodotti della compilazione
+*.wapp
+apps/*/build/files/code/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Editor
+.idea/
+.vscode/
