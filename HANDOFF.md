@@ -1,6 +1,6 @@
 # Fossil Hybrid Collider HR — handoff per Claude Code
 
-> Aggiornato al 2 novembre 2026. Riprende e amplia `fossil-hybrid-hr-project.md`.
+> Aggiornato al 3 novembre 2026. Riprende e amplia `fossil-hybrid-hr-project.md`.
 > ✅ = verificato sulla documentazione · ❓ = ipotesi da provare sull'orologio · ⚠️ = rischio noto
 
 ---
@@ -75,7 +75,9 @@ Obiettivo generale: l'app ufficiale Fossil è datata. Si vogliono migliorare o s
 | Widget custom | ✅ | Intent `nodomain.freeyourgadget.gadgetbridge.Q_PUSH_CONFIG` con `EXTRA_CONFIG_JSON`. Firmware ≥ 2.20r, Gadgetbridge ≥ 0.63.0: il 3.0 con 0.95.1 rientra (la documentazione non nomina il 3.x, è una deduzione) |
 | Commute/menu sul firmware dell'amico | ⚠️❓ | Firmware 3.0. La commute app è "Firmware version 2.x only". Il **menu custom** non ha limiti di firmware scritti, ma i suoi eventi verso il telefono sono documentati nella sezione della commute app: sul 3.0 va provato prima di costruirci la Fase 4 |
 | Quadranti su firmware 3.0 | ✅ | Massimo **2 quadranti** sull'orologio (documentazione Gadgetbridge). Conta per la variante B |
-| Luce oltre 5 s | ❓ | Nessuna API documentata. Idea: rimandare un `double_tap` sintetico con un timer. Indizio forte: il quadrante di Gadgetbridge usa lo stesso evento (`emulate_double_tap`) per l'opzione `toggle_backlight_event` e per accendere la luce alle notifiche. Il nome "toggle" fa pensare che un secondo tocco a luce accesa possa spegnerla: lo controlla la prova 0 di `lightTestApp` |
+| Luce oltre 5 s | ✅ | Provato sull'orologio (v1, `reports/prova-luce-v1.md`): un `double_tap` sintetico ogni **2 s** tiene la luce fissa, senza sfarfallio, anche con l'app in background. Un tocco a luce accesa non la spegne. Allo stop la luce resta ~2–3 s. Nessuna API conosciuta ne regola l'intensità |
+| App in background | ⚠️ | Uscendo con `go_home(false)` l'app finisce `hidden` (mai `background`) e non si torna più al quadrante col centro tenuto. La v2 prova `go_back(false)`, come l'app Timer, e ignora i tasti fuori dallo schermo |
+| Eventi `class: 'user'` | ✅ | Il `double_tap` finto arriva anche all'app che lo manda (92 inviati, 92 ricevuti) |
 | Campo `total_sleep` | ❓ | Contenuto non documentato |
 | Dati notturni nel DB | ❓ | Schema noto (`docs/c1-dati.md`): tabella `HYBRID_HRACTIVITY_SAMPLE` con passi, battito, `VARIABILITY` (movimento?) e `WEAR_TYPE` (indossato?). Il primo export non ha ancora campioni: risoluzione e significato delle colonne da verificare dopo una notte sincronizzata |
 | Installare senza chiave | ❓ | Il README dell'SDK dice "no authentication needed", ma Gadgetbridge richiede la chiave per il pairing. Strada sicura: estrarre la chiave |
@@ -161,9 +163,19 @@ Domande a cui risponde il test: la luce resta accesa senza buchi? Sfarfalla? Il 
 
 Se funziona solo in primo piano → **variante B (❓)**: aggiungere il keep-alive al quadrante open source di Gadgetbridge (`fossil-hr-gbapps`), che resta sempre in primo piano e contiene anche il menu custom. Più complesso: il menu non va rotto.
 
-**Stato (2 novembre 2026): v1 pronta, in attesa della prova dell'amico.**
+**Stato (3 novembre 2026): v1 provata (`reports/prova-luce-v1.md`); v2 pronta, in attesa della prova dell'amico.**
 
-| Voce | Dettaglio |
+| Voce | v2 |
+|---|---|
+| Consegna | `consegne/lightTestApp-v2.wapp` (10,8 KB, sha256 `450ab22b…`), istruzioni in `docs/prova-luce-v2.md`. Versione `2.0.0.0` |
+| Cosa cambia | Intervallo fisso a 2 s, nessun limite di tempo (requisito 4: «senza limite»). Tasti gestiti solo con l'app visibile: fuori si contano soltanto (`fuori N: ultimo tasto`) |
+| Pulsanti | In alto: luce ON/OFF. In basso: sfondo nero/bianco (`inversion` del contenitore radice, segnaposto `#inverti`). In basso tenuto: uscita al menu (`go_back`) o al quadrante (`go_home`). Centro tenuto: esce, senza chiudere l'app se la luce è ON |
+| Domande | Quale uscita lascia navigare normalmente? Lo stato diventa `b`? Arrivano tasti all'app fuori dallo schermo? Il menu di sistema si chiude da solo con i tocchi finti? Lo sfondo bianco funziona e sembra più luminoso? Batteria in 1 ora |
+| Prova senza orologio | `bash strumenti/prova.sh apps/lightTestApp`: 24 controlli, passano tutti |
+
+Dopo la v2: versione definitiva con il solo ON/OFF e l'uscita che funziona; se nessuna uscita lascia navigare bene, variante B (luce nel quadrante).
+
+| Voce | v1 |
 |---|---|
 | Consegna | `consegne/lightTestApp-v1.wapp` (10,6 KB, sha256 `90cb6ba6…`), istruzioni in `docs/prova-luce-v1.md` |
 | Sorgenti | `apps/lightTestApp/`: `app.js`, layout `luce_layout` (8 righe), `display_name` «Luce test», icone dell'esempio `simple-menu`. Id `lightTestApp`, versione `1.0.0.0` |
@@ -308,8 +320,8 @@ fossilpazzo/            (GitHub: Vito-Pepe/fossilpazzo, cartella locale: F:\foss
 ├─ apps/lightTestApp/  ← Fase 2
 ├─ sleep/              ← opzione C (pacchetto Python, tests/, config.yaml)
 ├─ tasker/             ← profili esportati (SOS, relay Blink, widget sonno)
-├─ reports/            ← report dei test dell'amico
-├─ docs/               ← c1-dati.md, c3-validazione.md, fase1-amico.md
+├─ reports/            ← report dei test dell'amico (prova-luce-v1.md)
+├─ docs/               ← c1-dati.md, c3-validazione.md, fase1-amico.md, prova-luce-v*.md
 ├─ data/               ← export del DB (NON in git)
 ├─ segreti/            ← chiave dell'orologio (NON in git)
 └─ .gitignore          ← sdk/, data/, segreti/, .wapp
@@ -348,6 +360,6 @@ fossilpazzo/            (GitHub: Vito-Pepe/fossilpazzo, cartella locale: F:\foss
 
 ## 12. Avvertenze
 
-- Luce, cause di Blink, pulsante di emergenza e stima del sonno restano ipotesi finché non vengono provati sull'orologio dell'amico.
+- La luce sempre accesa funziona (v1); il ritorno al quadrante con l'app in background no, ancora da provare (v2). Cause di Blink, pulsante di emergenza e stima del sonno restano ipotesi finché non vengono provati sull'orologio dell'amico.
 - Se i server Fossil chiudono, ottenere una nuova chiave potrebbe diventare impossibile: non dissociare e non resettare l'orologio.
 - Le stime del sonno non hanno valore medico.
