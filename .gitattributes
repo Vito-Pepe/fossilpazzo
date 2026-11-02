@@ -1,6 +1,7 @@
 # Gli script girano in Linux (WSL): fine riga LF anche se il repo è clonato da Windows
 * text=auto eol=lf
 *.png binary
+*.wapp binary
 *.xcf binary
 apps/*/build/files/icons/* binary
 apps/*/build/files/display_name/* -text

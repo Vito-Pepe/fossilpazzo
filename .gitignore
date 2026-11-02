@@ -13,8 +13,9 @@ Gadgetbridge.db
 *.key
 .env
 
-# Prodotti della compilazione
+# Prodotti della compilazione (i .wapp consegnati all'amico stanno in consegne/)
 *.wapp
+!consegne/*.wapp
 apps/*/build/files/code/
 
 # Python

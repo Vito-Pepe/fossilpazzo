@@ -1,0 +1,285 @@
+[
+    {
+        "id": 0,
+        "type": "container",
+        "direction": 1,
+        "main_alignment": 0,
+        "cross_alignment": 1,
+        "dimension": {
+            "type": "rigid",
+            "width": 240,
+            "height": 240
+        },
+        "placement": {
+            "type": "absolute",
+            "left": 0,
+            "top": 0
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 1,
+        "parent_id": 0,
+        "type": "container",
+        "direction": 1,
+        "main_alignment": 1,
+        "cross_alignment": 1,
+        "dimension": {
+            "type": "rigid",
+            "width": 240,
+            "height": 22
+        },
+        "placement": {
+            "type": "absolute",
+            "left": 0,
+            "top": 24
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 2,
+        "parent_id": 1,
+        "type": "text",
+        "text": "#r0",
+        "ppem": 17,
+        "color": 3,
+        "placement": {
+            "type": "relative"
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 3,
+        "parent_id": 0,
+        "type": "container",
+        "direction": 1,
+        "main_alignment": 1,
+        "cross_alignment": 1,
+        "dimension": {
+            "type": "rigid",
+            "width": 240,
+            "height": 22
+        },
+        "placement": {
+            "type": "absolute",
+            "left": 0,
+            "top": 46
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 4,
+        "parent_id": 3,
+        "type": "text",
+        "text": "#r1",
+        "ppem": 17,
+        "color": 3,
+        "placement": {
+            "type": "relative"
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 5,
+        "parent_id": 0,
+        "type": "container",
+        "direction": 1,
+        "main_alignment": 1,
+        "cross_alignment": 1,
+        "dimension": {
+            "type": "rigid",
+            "width": 240,
+            "height": 22
+        },
+        "placement": {
+            "type": "absolute",
+            "left": 0,
+            "top": 68
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 6,
+        "parent_id": 5,
+        "type": "text",
+        "text": "#r2",
+        "ppem": 17,
+        "color": 3,
+        "placement": {
+            "type": "relative"
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 7,
+        "parent_id": 0,
+        "type": "container",
+        "direction": 1,
+        "main_alignment": 1,
+        "cross_alignment": 1,
+        "dimension": {
+            "type": "rigid",
+            "width": 240,
+            "height": 22
+        },
+        "placement": {
+            "type": "absolute",
+            "left": 0,
+            "top": 90
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 8,
+        "parent_id": 7,
+        "type": "text",
+        "text": "#r3",
+        "ppem": 17,
+        "color": 3,
+        "placement": {
+            "type": "relative"
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 9,
+        "parent_id": 0,
+        "type": "container",
+        "direction": 1,
+        "main_alignment": 1,
+        "cross_alignment": 1,
+        "dimension": {
+            "type": "rigid",
+            "width": 240,
+            "height": 22
+        },
+        "placement": {
+            "type": "absolute",
+            "left": 0,
+            "top": 130
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 10,
+        "parent_id": 9,
+        "type": "text",
+        "text": "#r4",
+        "ppem": 17,
+        "color": 3,
+        "placement": {
+            "type": "relative"
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 11,
+        "parent_id": 0,
+        "type": "container",
+        "direction": 1,
+        "main_alignment": 1,
+        "cross_alignment": 1,
+        "dimension": {
+            "type": "rigid",
+            "width": 240,
+            "height": 22
+        },
+        "placement": {
+            "type": "absolute",
+            "left": 0,
+            "top": 152
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 12,
+        "parent_id": 11,
+        "type": "text",
+        "text": "#r5",
+        "ppem": 17,
+        "color": 3,
+        "placement": {
+            "type": "relative"
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 13,
+        "parent_id": 0,
+        "type": "container",
+        "direction": 1,
+        "main_alignment": 1,
+        "cross_alignment": 1,
+        "dimension": {
+            "type": "rigid",
+            "width": 240,
+            "height": 22
+        },
+        "placement": {
+            "type": "absolute",
+            "left": 0,
+            "top": 174
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 14,
+        "parent_id": 13,
+        "type": "text",
+        "text": "#r6",
+        "ppem": 17,
+        "color": 3,
+        "placement": {
+            "type": "relative"
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 15,
+        "parent_id": 0,
+        "type": "container",
+        "direction": 1,
+        "main_alignment": 1,
+        "cross_alignment": 1,
+        "dimension": {
+            "type": "rigid",
+            "width": 240,
+            "height": 22
+        },
+        "placement": {
+            "type": "absolute",
+            "left": 0,
+            "top": 196
+        },
+        "visible": true,
+        "inversion": false
+    },
+    {
+        "id": 16,
+        "parent_id": 15,
+        "type": "text",
+        "text": "#r7",
+        "ppem": 17,
+        "color": 3,
+        "placement": {
+            "type": "relative"
+        },
+        "visible": true,
+        "inversion": false
+    }
+]
