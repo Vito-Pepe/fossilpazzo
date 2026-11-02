@@ -46,9 +46,9 @@ Obiettivo generale: l'app ufficiale Fossil è datata. Si vogliono migliorare o s
 | Voce | Valore |
 |---|---|
 | Orologio | Fossil Hybrid **Collider HR**: e-ink con lancette reali, firmware Fossil (non Wear OS). Revisione hardware del 42 mm: `DN1.0` |
-| Firmware | ❓ da chiedere all'amico |
+| Firmware | ✅ **DN1.0.3.0r.v13** (firmware "3.0"), modello DW8F1. In Gadgetbridge il dispositivo è `Hybrid HR Collider`, modello `DN.1.0` |
 | Telefono dell'amico | Android |
-| App sul telefono | **Gadgetbridge** (deciso: serve per installare i `.wapp`) |
+| App sul telefono | **Gadgetbridge 0.95.1** (deciso: serve per installare i `.wapp`) |
 | Macchina di sviluppo | WSL2 su Windows (strada indicata dall'SDK). macOS non provato |
 
 ### Vincoli verificati (documentazione Gadgetbridge)
@@ -72,11 +72,12 @@ Obiettivo generale: l'app ufficiale Fossil è datata. Si vogliono migliorare o s
 | SDK | ✅ | JerryScript **2.1.0** (`jerry` e `jerry-snapshot` nel PATH), `make`. Su Windows probabilmente non gira in modo nativo; con il sottosistema Linux (WSL) sì. Di default `make` compila e installa tramite `adb` + Gadgetbridge |
 | Export dati | ✅ | Database SQLite chiamato `Gadgetbridge` (senza estensione), tabelle separate per tipo di dispositivo. Auto-export: Impostazioni → Automazioni → Auto export database (cartella e frequenza), con pulsante "Run AutoExport now". Le etichette in italiano possono variare |
 | Menu custom → telefono | ✅ | Gadgetbridge ≥ 0.67.0 + app **Fossil HR Menu Companion**. Il menu fa parte del quadrante di Gadgetbridge. Una voce invia l'intent `nodomain.freeyourgadget.gadgetbridge.Q_COMMUTE_MENU` (extra `extra_action`); il telefono risponde con `nodomain.freeyourgadget.gadgetbridge.Q_SET_MENU_MESSAGE` (`EXTRA_MESSAGE`, `EXTRA_FINISHED`) |
-| Widget custom | ✅ | Intent `nodomain.freeyourgadget.gadgetbridge.Q_PUSH_CONFIG` con `EXTRA_CONFIG_JSON`. Firmware ≥ 2.20r, Gadgetbridge ≥ 0.63.0 |
-| Commute/menu sul firmware dell'amico | ❓ | La documentazione indica la commute app come "solo firmware 2.x" |
+| Widget custom | ✅ | Intent `nodomain.freeyourgadget.gadgetbridge.Q_PUSH_CONFIG` con `EXTRA_CONFIG_JSON`. Firmware ≥ 2.20r, Gadgetbridge ≥ 0.63.0: il 3.0 con 0.95.1 rientra (la documentazione non nomina il 3.x, è una deduzione) |
+| Commute/menu sul firmware dell'amico | ⚠️❓ | Firmware 3.0. La commute app è "Firmware version 2.x only". Il **menu custom** non ha limiti di firmware scritti, ma i suoi eventi verso il telefono sono documentati nella sezione della commute app: sul 3.0 va provato prima di costruirci la Fase 4 |
+| Quadranti su firmware 3.0 | ✅ | Massimo **2 quadranti** sull'orologio (documentazione Gadgetbridge). Conta per la variante B |
 | Luce oltre 5 s | ❓ | Nessuna API documentata. Idea: rimandare un `double_tap` sintetico con un timer |
 | Campo `total_sleep` | ❓ | Contenuto non documentato |
-| Dati notturni nel DB | ❓ | Risoluzione, colonne di movimento e di "indossato" da verificare (C1) |
+| Dati notturni nel DB | ❓ | Schema noto (`docs/c1-dati.md`): tabella `HYBRID_HRACTIVITY_SAMPLE` con passi, battito, `VARIABILITY` (movimento?) e `WEAR_TYPE` (indossato?). Il primo export non ha ancora campioni: risoluzione e significato delle colonne da verificare dopo una notte sincronizzata |
 | Installare senza chiave | ❓ | Il README dell'SDK dice "no authentication needed", ma Gadgetbridge richiede la chiave per il pairing. Strada sicura: estrarre la chiave |
 | Stabilità | ⚠️ | Alcune app crashano su certi firmware, forse per poca memoria |
 
@@ -131,6 +132,19 @@ script Python → report sonno ◀─────────  export DB "Gadget
 7. Attivare l'**auto-export** giornaliero del database in una cartella da condividere con Vito.
 8. Controllo notifiche: arrivano quelle di altre app? E quelle di Blink? Ora le inoltra Gadgetbridge, non più l'app Fossil.
 
+**Esito (2 novembre 2026)** — checklist per l'amico in `docs/fase1-amico.md`:
+
+| Punto | Esito |
+|---|---|
+| 1. Firmware | ✅ DN1.0.3.0r.v13, modello DW8F1 |
+| 2. Screenshot sonno | ✅ 16 schermate (elenco e dettaglio per notte, 5–25 ottobre circa) in `data/screenshot-sonno-fossil/`, fuori da git. Ogni dettaglio dà inizio–fine, sonno totale, sveglio/leggero/profondo e range del battito. Andamento: addormentamento 02:00–03:30, risveglio 08:40–10:20, 6 h 20 – 7 h 30. Da trascrivere in un CSV quando parte C3 |
+| 3. Chiave | ✅ Estratta con lo script Python della documentazione Gadgetbridge; lo script, che conteneva le credenziali Fossil, è stato cancellato. Info dell'orologio in `segreti/info-orologio.md` |
+| 4–5. Gadgetbridge | ✅ 0.95.1, collegato all'orologio |
+| 6. Backup app | ✅ App Manager → «Download to cache»; le app restano nella scheda Cache di Gadgetbridge |
+| 7. Auto-export | ✅ Attivo. Primo export in `data/2026-11-02/Gadgetbridge.db` |
+| 8. Notifiche | ✅ Arrivano. ❓ Blink da confermare |
+| Sonno dell'app Fossil | ✅ L'amico accetta di perderlo finché l'opzione C non funziona |
+
 ### Fase 2 — Pacchetto test #1 (priorità)
 
 Un solo `.wapp` con nome nuovo (es. `lightTestApp`) che **non** sostituisce app ufficiali: evitare nomi come `timerApp`, `stopwatchApp`, `weatherApp`. L'id si imposta in `build/app.json`.
@@ -184,6 +198,7 @@ Con Gadgetbridge il problema va ritestato da zero.
 - Domande: un campione al minuto? Quali colonne (passi, battito, intensità o movimento, stato indossato)? Ci sono buchi di notte? Formato dei timestamp (probabile Unix epoch in UTC, da verificare)?
 - Output: `docs/c1-dati.md` con schema, poche righe di esempio e il grafico di una notte.
 - **Decisione:** solo passi + battito → stima grezza (orari e durata). C'è anche un indice di movimento → algoritmo attigrafico (C2, punto 4).
+- **Stato (2 novembre 2026):** schema letto dal primo export (`docs/c1-dati.md`). La tabella c'è e ha una colonna candidata al movimento (`VARIABILITY`), ma è ancora vuota: serve un export dopo una notte **sincronizzata** (in Gadgetbridge, sincronizzare la mattina prima dell'export).
 
 ### C2 — Algoritmo v1 (Python 3: `sqlite3`, `pandas`, `matplotlib`)
 
@@ -258,12 +273,13 @@ Note (per lo sfarfallio meglio un video di 20-30 s):
 
 | Domanda | Chi risponde | Blocca |
 |---|---|---|
-| Versione firmware dell'orologio | Amico | Fasi 2, 4, C5 |
-| La chiave si ottiene ancora dai server Fossil? | Amico | Tutto |
-| Accetta di perdere il sonno dell'app Fossil finché l'opzione C non funziona? | Amico | Tutto |
-| Le notifiche di altre app arrivano all'orologio? | Amico | Fase 5 |
-| Cosa salva Gadgetbridge per la Hybrid HR di notte? | Claude Code (C1) | Fase 3 |
-| Menu custom e commute funzionano sul suo firmware? | Amico | Fase 4 |
+| ~~Versione firmware dell'orologio~~ | ✅ DN1.0.3.0r.v13 | — |
+| ~~La chiave si ottiene ancora dai server Fossil?~~ | ✅ Sì (2 novembre 2026) | — |
+| ~~Accetta di perdere il sonno dell'app Fossil finché l'opzione C non funziona?~~ | ✅ Sì | — |
+| ~~Le notifiche di altre app arrivano all'orologio?~~ | ✅ Sì | — |
+| Le notifiche di Blink arrivano con Gadgetbridge? | Amico | Fase 5 |
+| Cosa salva Gadgetbridge per la Hybrid HR di notte? | Claude Code (C1): schema noto, mancano i campioni | Fase 3 |
+| Il menu custom funziona sul firmware 3.0? (la commute app è solo 2.x) | Amico, con una prova | Fase 4 |
 
 ---
 
