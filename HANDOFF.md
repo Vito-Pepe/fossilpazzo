@@ -75,7 +75,7 @@ Obiettivo generale: l'app ufficiale Fossil è datata. Si vogliono migliorare o s
 | Widget custom | ✅ | Intent `nodomain.freeyourgadget.gadgetbridge.Q_PUSH_CONFIG` con `EXTRA_CONFIG_JSON`. Firmware ≥ 2.20r, Gadgetbridge ≥ 0.63.0: il 3.0 con 0.95.1 rientra (la documentazione non nomina il 3.x, è una deduzione) |
 | Commute/menu sul firmware dell'amico | ⚠️❓ | Firmware 3.0. La commute app è "Firmware version 2.x only". Il **menu custom** non ha limiti di firmware scritti, ma i suoi eventi verso il telefono sono documentati nella sezione della commute app: sul 3.0 va provato prima di costruirci la Fase 4 |
 | Quadranti su firmware 3.0 | ✅ | Massimo **2 quadranti** sull'orologio (documentazione Gadgetbridge). Conta per la variante B |
-| Luce oltre 5 s | ❓ | Nessuna API documentata. Idea: rimandare un `double_tap` sintetico con un timer |
+| Luce oltre 5 s | ❓ | Nessuna API documentata. Idea: rimandare un `double_tap` sintetico con un timer. Indizio forte: il quadrante di Gadgetbridge usa lo stesso evento (`emulate_double_tap`) per l'opzione `toggle_backlight_event` e per accendere la luce alle notifiche. Il nome "toggle" fa pensare che un secondo tocco a luce accesa possa spegnerla: lo controlla la prova 0 di `lightTestApp` |
 | Campo `total_sleep` | ❓ | Contenuto non documentato |
 | Dati notturni nel DB | ❓ | Schema noto (`docs/c1-dati.md`): tabella `HYBRID_HRACTIVITY_SAMPLE` con passi, battito, `VARIABILITY` (movimento?) e `WEAR_TYPE` (indossato?). Il primo export non ha ancora campioni: risoluzione e significato delle colonne da verificare dopo una notte sincronizzata |
 | Installare senza chiave | ❓ | Il README dell'SDK dice "no authentication needed", ma Gadgetbridge richiede la chiave per il pairing. Strada sicura: estrarre la chiave |
@@ -160,6 +160,18 @@ Un solo `.wapp` con nome nuovo (es. `lightTestApp`) che **non** sostituisce app 
 Domande a cui risponde il test: la luce resta accesa senza buchi? Sfarfalla? Il timer continua quando l'app non è in primo piano? Quanto consuma in un'ora?
 
 Se funziona solo in primo piano → **variante B (❓)**: aggiungere il keep-alive al quadrante open source di Gadgetbridge (`fossil-hr-gbapps`), che resta sempre in primo piano e contiene anche il menu custom. Più complesso: il menu non va rotto.
+
+**Stato (2 novembre 2026): v1 pronta, in attesa della prova dell'amico.**
+
+| Voce | Dettaglio |
+|---|---|
+| Consegna | `consegne/lightTestApp-v1.wapp` (10,6 KB, sha256 `90cb6ba6…`), istruzioni in `docs/prova-luce-v1.md` |
+| Sorgenti | `apps/lightTestApp/`: `app.js`, layout `luce_layout` (8 righe), `display_name` «Luce test», icone dell'esempio `simple-menu`. Id `lightTestApp`, versione `1.0.0.0` |
+| Pulsanti | In alto: luce ON/OFF. In basso: intervallo 3 → 4 → 6 → 2 s. In basso tenuto: modo A (1 tocco) / B (2 tocchi di fila). Centro: un tocco singolo (prova 0). Centro tenuto: esce; con la luce ON l'app resta in background (`go_home(false)`) e il timer continua |
+| Schermo | Stato, intervallo, tocchi inviati, ultimi stati di sistema (`v`/`h`/`b`), eventi `double_tap` ricevuti, minuti di accensione, batteria all'accensione e ora, `hr_bpm`, `hr_bpm_resting`, `total_sleep`, polso, `firmware_version`. Si ridisegna solo ai pulsanti e al ritorno in primo piano, non a ogni timer: niente sfarfallio dell'e-ink da confondere con la luce |
+| Sicurezza | Spegnimento automatico dopo 2 ore; i dati di sistema si leggono in `try/catch` (`?` se mancano) |
+| Prova senza orologio | `bash strumenti/prova.sh apps/lightTestApp`: 19 controlli in JerryScript 2.1.0 con un firmware simulato (`strumenti/simulatore.js`), compreso che ogni segnaposto del layout abbia un valore. Passano tutti. Il simulatore ricostruisce la state machine dagli esempi: non prova il comportamento reale del firmware |
+| Scelte prese dalle app di Gadgetbridge (`fossil-hr-gbapps`, mantenute) | `get_common()` per i dati di sistema (con ripiego sulla variabile globale `common`), aggiornamento schermo `gc4` (intero) / `du4` (parziale), righe di testo in contenitori come in `menu_layout` |
 
 ### Fase 3 — Sonno, opzione C
 
@@ -251,7 +263,7 @@ Requisiti dalla documentazione: widget custom configurato in Gadgetbridge ≥ 0.
 2. Gadgetbridge → App Manager → carica il file.
 3. Avvia l'app dall'App Manager: le app nuove non compaiono nel menu dell'orologio.
 
-**Report da rimandare dopo ogni prova**
+**Report da rimandare dopo ogni prova** (ogni consegna ha le sue istruzioni e il suo modulo in `docs/`, es. `docs/prova-luce-v1.md`)
 
 ```
 App e versione:
@@ -290,7 +302,8 @@ fossilpazzo/            (GitHub: Vito-Pepe/fossilpazzo, cartella locale: F:\foss
 ├─ HANDOFF.md          ← questo file
 ├─ CLAUDE.md           ← istruzioni per Claude Code
 ├─ README.md
-├─ strumenti/          ← prepara-wsl.sh, compila.sh
+├─ strumenti/          ← prepara-wsl.sh, compila.sh, prova.sh + simulatore.js
+├─ consegne/           ← i .wapp mandati all'amico, con la versione nel nome (in git)
 ├─ sdk/                ← clone di Fossil-HR-SDK (NON in git, lo clona prepara-wsl.sh)
 ├─ apps/lightTestApp/  ← Fase 2
 ├─ sleep/              ← opzione C (pacchetto Python, tests/, config.yaml)
