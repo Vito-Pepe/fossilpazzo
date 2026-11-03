@@ -16,7 +16,7 @@
             "top": 0
         },
         "visible": true,
-        "inversion": false
+        "inversion": "#inverti"
     },
     {
         "id": 1,
